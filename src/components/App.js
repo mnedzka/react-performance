@@ -15,6 +15,8 @@ import { CardFilter } from './CardFilter';
 
 import cards from '../cards.json';
 
+
+
 function App() {
   const [selectedHeroClass, setHeroClass] = useState('');
   const [searchText, setSearchText] = useState('');
