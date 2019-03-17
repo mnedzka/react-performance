@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import _ from 'lodash';
 import Fuse from 'fuse.js';
@@ -23,17 +23,22 @@ function App() {
   const [isManaVisible, setManaVisible] = useState(false);
   const [cardsTypeFilter, setCardsTypeFilter] = useState('ALL');
 
-  const availableCards = selectedHeroClass
-    ? _.filter(
-      cards,
-      c => c.cardClass === selectedHeroClass || c.cardClass === 'NEUTRAL'
-    )
-    : [];
+  const availableCards = useMemo(() => {
+    console.log('availableCards');
+    return selectedHeroClass
+      ? _.filter(
+        cards,
+        c => c.cardClass === selectedHeroClass || c.cardClass === 'NEUTRAL'
+      )
+      : [];
+  }, [selectedHeroClass]);
 
-  const cardFilteredByType =
-    cardsTypeFilter !== 'ALL'
+  const cardFilteredByType = useMemo(() => {
+    console.log('cardFilteredByType');
+    return cardsTypeFilter !== 'ALL'
       ? _.filter(availableCards, c => c.type === cardsTypeFilter)
       : availableCards;
+  }, [cardsTypeFilter, availableCards]);
 
   const fuse = new Fuse(cardFilteredByType, {
     keys: [
@@ -48,13 +53,17 @@ function App() {
     ],
     threshold: 0.3,
   });
-  const cardsInFeed =
-    searchText.length > 0 ? fuse.search(searchText) : cardFilteredByType;
+
+  const cardsInFeed = useMemo(() => {
+    console.log('cardsInFeed');
+    return searchText.length > 0 ? fuse.search(searchText) : cardFilteredByType;
+  }, [searchText, cardFilteredByType]);
 
   const totalPackCost = deck.cards.reduce(
     (a, v) => a + CRAFTING_COST[v.rarity] * deck.quantity[v.id],
     0
-  );
+  )
+
   const usedMechanics = deck.cards
     .reduce(
       (a, v) => (deck.quantity[v.id] === 2 ? a.concat([v, v]) : a.concat([v])),
@@ -75,18 +84,24 @@ function App() {
     }
     return true;
   };
-  const addToDeck = card => {
-    if (!canAddCard(card)) {
-      return;
-    }
-    const quantity = deck.quantity[card.id]
-      ? Object.assign(deck.quantity, { [card.id]: 2 })
-      : Object.assign(deck.quantity, { [card.id]: 1 });
-    const cards = _.filter(availableCards, c => quantity[c.id]).sort(
-      (a, b) => a.cost - b.cost
-    );
-    setDeck({ cards, quantity });
-  };
+
+  const addToDeck = useCallback(
+    card => {
+      console.log('useCallback');
+
+      if (!canAddCard(card)) {
+        return;
+      }
+      const quantity = deck.quantity[card.id]
+        ? Object.assign(deck.quantity, { [card.id]: 2 })
+        : Object.assign(deck.quantity, { [card.id]: 1 });
+      const cards = _.filter(availableCards, c => quantity[c.id]).sort(
+        (a, b) => a.cost - b.cost
+      );
+      setDeck({ cards, quantity });
+    },
+    [availableCards, deck.quantity]
+  );
 
   const removeFromDeck = id => {
     const quantity =
