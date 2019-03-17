@@ -16,8 +16,8 @@ import { CardFilter } from './CardFilter';
 import cards from '../cards.json';
 
 function App() {
-  const [selectedHeroClass, setHeroClass] = useState('');
-  const [searchText, setSearchText] = useState('');
+  const [selectedHeroClass, setHeroClass] = useState('MAGE');
+  const [searchText, setSearchText] = useState('hodowca');
   const [highlightMechanic, setHighlightMechanic] = useState('');
   const [deck, setDeck] = useState({ cards: [], quantity: {} });
   const [isManaVisible, setManaVisible] = useState(false);
@@ -25,9 +25,9 @@ function App() {
 
   const availableCards = selectedHeroClass
     ? _.filter(
-        cards,
-        c => c.cardClass === selectedHeroClass || c.cardClass === 'NEUTRAL'
-      )
+      cards,
+      c => c.cardClass === selectedHeroClass || c.cardClass === 'NEUTRAL'
+    )
     : [];
 
   const cardFilteredByType =
@@ -105,53 +105,53 @@ function App() {
       {!selectedHeroClass ? (
         <HeroPicker setHeroClass={setHeroClass} />
       ) : (
-        <Grid>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Header dividing size="large">
-                Klasa: {selectedHeroClass}
-              </Header>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <CardFilter
-                searchText={searchText}
-                setSearchText={setSearchText}
-                cardsTypeFilter={cardsTypeFilter}
-                setCardsTypeFilter={setCardsTypeFilter}
-              />
-              <Divider hidden />
-              <CardsFeed
-                deck={deck}
-                cardsInFeed={cardsInFeed}
-                addToDeck={addToDeck}
-              />
-            </Grid.Column>
-            <Grid.Column width={8}>
-              <ManaCurve
-                isManaVisible={isManaVisible}
-                setManaVisible={setManaVisible}
-                deck={deck}
-              />
-              <Deck
-                deck={deck}
-                highlightMechanic={highlightMechanic}
-                cardsTypeFilter={cardsTypeFilter}
-                removeFromDeck={removeFromDeck}
-              />
-              <DeckStatistics
-                totalPackCost={totalPackCost}
-                cardCount={cardCount}
-              />
-              <UsedMechanics
-                setHighlightMechanic={setHighlightMechanic}
-                usedMechanics={usedMechanics}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      )}
+          <Grid>
+            <Grid.Row>
+              <Grid.Column width={16}>
+                <Header dividing size="large">
+                  Klasa: {selectedHeroClass}
+                </Header>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <CardFilter
+                  searchText={searchText}
+                  setSearchText={setSearchText}
+                  cardsTypeFilter={cardsTypeFilter}
+                  setCardsTypeFilter={setCardsTypeFilter}
+                />
+                <Divider hidden />
+                <CardsFeed
+                  deck={deck}
+                  cardsInFeed={cardsInFeed}
+                  addToDeck={addToDeck}
+                />
+              </Grid.Column>
+              <Grid.Column width={8}>
+                <ManaCurve
+                  isManaVisible={isManaVisible}
+                  setManaVisible={setManaVisible}
+                  deck={deck}
+                />
+                <Deck
+                  deck={deck}
+                  highlightMechanic={highlightMechanic}
+                  cardsTypeFilter={cardsTypeFilter}
+                  removeFromDeck={removeFromDeck}
+                />
+                <DeckStatistics
+                  totalPackCost={totalPackCost}
+                  cardCount={cardCount}
+                />
+                <UsedMechanics
+                  setHighlightMechanic={setHighlightMechanic}
+                  usedMechanics={usedMechanics}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        )}
     </Container>
   );
 }
