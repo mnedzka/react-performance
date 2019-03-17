@@ -1,46 +1,32 @@
 import React from 'react';
 import { BarChart, Bar, YAxis, XAxis, ResponsiveContainer } from 'recharts';
-import memoizeOne from 'memoize-one';
-
-const cardsByCost = (deck) => {
-  const cardsByCost = deck.cards
-    .reduce(
-      (a, v) =>
-        deck.quantity[v.id] === 2
-          ? a.concat([v.cost, v.cost])
-          : a.concat([v.cost]),
-      []
-    ).map(i => {
-      console.log(i)
-      return i
-    })
-    .reduce((a, v) => {
-      let count = {};
-      if (v >= 7) {
-        count = { '7+': (a['7+'] || 0) + 1 };
-      } else {
-        count = { [v]: (a[v] || 0) + 1 };
-      }
-      return Object.assign(a, count);
-    }, {});
-
-  const data = Array(8)
-    .fill(0)
-    .map((v, i) => {
-      if (i >= 7) {
-        return { text: '7+', cost: cardsByCost['7+'] || 0 };
-      }
-      return { text: i, cost: cardsByCost[i] || 0 };
-    });
-  return data
-}
-
-const memoizedCardsByCost = memoizeOne(cardsByCost);
-
 export class ManaCurveChart extends React.Component {
-
   render() {
-    const data = memoizedCardsByCost(this.props.deck)
+    const cardsByCost = this.props.deck.cards
+      .reduce(
+        (a, v) =>
+          this.props.deck.quantity[v.id] === 2
+            ? a.concat([v.cost, v.cost])
+            : a.concat([v.cost]),
+        []
+      )
+      .reduce((a, v) => {
+        let count = {};
+        if (v >= 7) {
+          count = { '7+': (a['7+'] || 0) + 1 };
+        } else {
+          count = { [v]: (a[v] || 0) + 1 };
+        }
+        return Object.assign(a, count);
+      }, {});
+    const data = Array(8)
+      .fill(0)
+      .map((v, i) => {
+        if (i >= 7) {
+          return { text: '7+', cost: cardsByCost['7+'] || 0 };
+        }
+        return { text: i, cost: cardsByCost[i] || 0 };
+      });
 
     return (
       <ResponsiveContainer height={150}>
