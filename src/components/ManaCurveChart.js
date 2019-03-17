@@ -1,33 +1,43 @@
 import React from 'react';
 import { BarChart, Bar, YAxis, XAxis, ResponsiveContainer } from 'recharts';
-export class ManaCurveChart extends React.Component {
-  render() {
-    const cardsByCost = this.props.deck.cards
-      .reduce(
-        (a, v) =>
-          this.props.deck.quantity[v.id] === 2
-            ? a.concat([v.cost, v.cost])
-            : a.concat([v.cost]),
-        []
-      )
-      .reduce((a, v) => {
-        let count = {};
-        if (v >= 7) {
-          count = { '7+': (a['7+'] || 0) + 1 };
-        } else {
-          count = { [v]: (a[v] || 0) + 1 };
-        }
-        return Object.assign(a, count);
-      }, {});
-    const data = Array(8)
-      .fill(0)
-      .map((v, i) => {
-        if (i >= 7) {
-          return { text: '7+', cost: cardsByCost['7+'] || 0 };
-        }
-        return { text: i, cost: cardsByCost[i] || 0 };
-      });
+import memoize from 'memoize-one';
 
+const calc = deck => {
+  const cardsByCost = deck.cards
+    .reduce(
+      (a, v) =>
+        deck.quantity[v.id] === 2
+          ? a.concat([v.cost, v.cost])
+          : a.concat([v.cost]),
+      []
+    )
+    .reduce((a, v) => {
+      let count = {};
+      if (v >= 7) {
+        count = { '7+': (a['7+'] || 0) + 1 };
+      } else {
+        count = { [v]: (a[v] || 0) + 1 };
+      }
+      return Object.assign(a, count);
+    }, {});
+
+  const data = Array(8)
+    .fill(0)
+    .map((v, i) => {
+      if (i >= 7) {
+        return { text: '7+', cost: cardsByCost['7+'] || 0 };
+      }
+      return { text: i, cost: cardsByCost[i] || 0 };
+    });
+
+  return data
+}
+
+const memoizedCalc = memoize(calc)
+
+export default class ManaCurveChart extends React.Component {
+  render() {
+    const data = memoizedCalc(this.props.deck)
     return (
       <ResponsiveContainer height={150}>
         <BarChart data={data}>

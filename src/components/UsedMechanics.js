@@ -1,5 +1,6 @@
 import React from 'react';
 import { Label, Header } from 'semantic-ui-react';
+
 export class UsedMechanics extends React.Component {
   render() {
     return (

@@ -1,7 +1,10 @@
 import React from 'react';
 import { Input, Dropdown } from 'semantic-ui-react';
+import { debounce } from 'throttle-debounce';
 
-export class CardFilter extends React.Component {
+export class CardFilter extends React.PureComponent {
+  onInputChange = debounce(500, this.props.setSearchText)
+
   render() {
     return (
       <Input
@@ -20,11 +23,11 @@ export class CardFilter extends React.Component {
             value={this.props.cardsTypeFilter}
           />
         }
-        onChange={(e, { value }) => this.props.setSearchText(value)}
+        onChange={(e, { value }) => this.onInputChange(value)}
         icon="search"
         iconPosition="left"
         fluid
-        value={this.props.searchText}
+        defaultValue={this.props.searchText}
         placeholder="Szukaj..."
       />
     );
