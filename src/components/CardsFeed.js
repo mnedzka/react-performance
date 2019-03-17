@@ -1,14 +1,17 @@
 import React, { memo } from 'react';
 import { Card, Icon, Label } from 'semantic-ui-react';
+import { FixedSizeList } from 'react-window';
+
 import { COLOR, LIMIT_IN_DECK } from '../cards-rarity-config';
 
 const CardInfo = memo(props => {
-  const { card, quantity } = props;
+  const { card, quantity, addToDeck, height } = props;
   return (
     <Card
       color={COLOR[card.rarity]}
       fluid
-      onClick={() => props.addToDeck(card)}
+      style={{ height }}
+      onClick={() => addToDeck(card)}
       key={card.id}
     >
       <Card.Content>
@@ -61,26 +64,32 @@ const CardInfo = memo(props => {
     </Card>
   );
 });
+
 export class CardsFeed extends React.PureComponent {
-  // shouldComponentUpdate(next) {
-  //  console.log('cardsInFeed');
-  //  if (next.cardsInFeed == this.props.cardsInFeed) {
-  //   console.log('równe');
-  //  }
-  //  return true;
-  // }
   render() {
     return (
-      <Card.Group>
-        {this.props.cardsInFeed.map(card => (
-          <CardInfo
-            key={card.id}
-            card={card}
-            quantity={this.props.deck.quantity[card.id]}
-            addToDeck={this.props.addToDeck}
-          />
-        ))}
-      </Card.Group>
+      <FixedSizeList
+        itemData={this.props.cardsInFeed}
+        height={750}
+        itemCount={this.props.cardsInFeed.length}
+        itemSize={180}
+      >
+        {({ data, index, style }) => {
+          const card = data[index];
+          const height = style.height - 10;
+          const quantity = this.props.deck.quantity[card.id];
+          return (
+            <div style={{ ...style, padding: 5 }}>
+              <CardInfo
+                addToDeck={this.props.addToDeck}
+                height={height}
+                card={card}
+                quantity={quantity}
+              />
+            </div>
+          );
+        }}
+      </FixedSizeList>
     );
   }
 }
