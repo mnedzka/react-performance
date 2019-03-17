@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import _ from 'lodash';
 import Fuse from 'fuse.js';
 import { Grid, Container, Divider, Header } from 'semantic-ui-react';
+import axios from 'axios'
 
 import { CRAFTING_COST } from '../cards-rarity-config';
 import { UsedMechanics } from './UsedMechanics';
@@ -13,9 +14,7 @@ import { CardsFeed } from './CardsFeed';
 import { ManaCurve } from './ManaCurve';
 import { CardFilter } from './CardFilter';
 
-import cards from '../cards.json';
-
-
+// import cards from '../cards.json';
 
 function App() {
   const [selectedHeroClass, setHeroClass] = useState('');
@@ -24,6 +23,17 @@ function App() {
   const [deck, setDeck] = useState({ cards: [], quantity: {} });
   const [isManaVisible, setManaVisible] = useState(false);
   const [cardsTypeFilter, setCardsTypeFilter] = useState('ALL');
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios(process.env.PUBLIC_URL + '/cards.json')
+
+      setCards(result.data)
+    }
+
+    fetchData()
+  }, [])
 
   const availableCards = useMemo(() => {
     console.log('availableCards');
